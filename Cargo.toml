@@ -4,4 +4,9 @@ version = "0.1.0"
 authors = ["Maxence Frenette <maxence.frenette@gmail.com>"]
 edition = "2018"
 
+[lib]
+name = "PentaRust"
+crate-type = ["dylib"]
+
 [dependencies]
+jni = "0.11.0"

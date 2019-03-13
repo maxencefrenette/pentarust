@@ -1,12 +1,12 @@
 package student_player;
 
 import boardgame.Move;
-
 import pentago_swap.PentagoPlayer;
 import pentago_swap.PentagoBoardState;
 
 /** A player file submitted by a student. */
 public class StudentPlayer extends PentagoPlayer {
+    private PentaRust pentaRust;
 
     /**
      * You must modify this constructor to return your student number. This is
@@ -15,6 +15,7 @@ public class StudentPlayer extends PentagoPlayer {
      */
     public StudentPlayer() {
         super("260685124");
+        pentaRust = new PentaRust();
     }
 
     /**
@@ -23,14 +24,9 @@ public class StudentPlayer extends PentagoPlayer {
      * make decisions.
      */
     public Move chooseMove(PentagoBoardState boardState) {
-        // You probably will make separate functions in MyTools.
-        // For example, maybe you'll need to load some pre-processed best opening
-        // strategies...
-        MyTools.getSomething();
+        System.out.println(pentaRust.chooseMove(0, 0));
 
-        Move myMove = boardState.getRandomMove();
-
-        // Return your move to be processed by the server.
-        return myMove;
+        // Return random move for now
+        return boardState.getRandomMove();
     }
 }
