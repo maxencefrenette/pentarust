@@ -49,9 +49,6 @@ public class StudentPlayer extends PentagoPlayer {
         Quadrant bSwap = Quadrant.values()[(int) (bitMove >> 24 & mask)];
         int playerId = (int) (bitMove >> 32 & mask);
 
-        // Return random move for now
-        PentagoMove m = new PentagoMove(x, y, aSwap, bSwap, playerId);
-        System.out.println(m.toPrettyString());
-        return m;
+        return new PentagoMove(x, y, aSwap, bSwap, playerId);
     }
 }

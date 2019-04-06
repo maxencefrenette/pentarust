@@ -7,8 +7,8 @@ const MASK: u64 = 0xF_FFFF_FFFF;
 
 #[derive(Debug, PartialEq, Eq, Default, Clone, Copy)]
 pub struct Board {
-    player1: u64,
-    player2: u64,
+    pub player1: u64,
+    pub player2: u64,
 }
 
 impl Board {
