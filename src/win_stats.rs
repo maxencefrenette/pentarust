@@ -10,6 +10,10 @@ pub struct WinStats {
 
 impl WinStats {
     pub fn expected_win_ratio(self, player: Player) -> f32 {
+        if self.games_played == 0. {
+            return 0.5;
+        }
+
         let w = self.wins(player);
         let n = self.games_played;
 
@@ -17,6 +21,10 @@ impl WinStats {
     }
 
     pub fn upper_confidence_bound(self, player: Player, remaining_games: f32) -> f32 {
+        if self.games_played == 0. {
+            return 1_000_000.;
+        }
+
         let c = f32::sqrt(2.);
         let w = self.wins(player);
         let n = self.games_played;

@@ -17,8 +17,6 @@ fn mcts_test() {
     ]));
     tree.search(Duration::from_secs(2));
 
-    println!("{:?}", tree.win_stats);
-
     println!("Total Games: {}", tree.win_stats.games_played);
     println!(
         "Player1 win percentage: {:.2}%",
