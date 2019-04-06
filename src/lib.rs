@@ -1,7 +1,9 @@
 use jni::JNIEnv;
 
-mod game;
-mod mcts;
+// Todo: only export for the test target
+pub mod game;
+pub mod mcts;
+pub mod win_stats;
 
 #[no_mangle]
 #[allow(non_snake_case)]

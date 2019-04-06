@@ -1,5 +1,6 @@
 use crate::game::Swap;
 
+#[derive(Debug, PartialEq, Eq, Clone, Copy)]
 pub struct Action {
     square: u8,
     swap: Swap,

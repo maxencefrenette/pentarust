@@ -1,4 +1,5 @@
 use crate::game::Action;
+use crate::game::Outcome;
 use crate::game::Player;
 use crate::game::Swap;
 
@@ -11,6 +12,25 @@ pub struct Board {
 }
 
 impl Board {
+    /// Creates a new board from an array of integers. Useful for testing purposes.
+    pub fn new(array: [[u8; 6]; 6]) -> Board {
+        let mut player1 = 0u64;
+        let mut player2 = 0u64;
+
+        #[allow(clippy::needless_range_loop)]
+        for i in 0..6 {
+            for j in 0..6 {
+                match array[i][j] {
+                    1 => player1 |= 1 << (6 * i + j),
+                    2 => player2 |= 1 << (6 * i + j),
+                    _ => {}
+                };
+            }
+        }
+
+        Board { player1, player2 }
+    }
+
     /// Returns the legal actions from this state
     pub fn actions(self) -> Vec<Action> {
         let mut free_squares = self.free_squares();
@@ -61,7 +81,19 @@ impl Board {
         }
     }
 
-    pub fn player_won(&self, player: Player) -> bool {
+    pub fn outcome(self) -> Option<Outcome> {
+        if self.is_draw() {
+            Some(Outcome::Draw)
+        } else if self.player_won(Player::Player1) {
+            Some(Outcome::Player1Win)
+        } else if self.player_won(Player::Player2) {
+            Some(Outcome::Player2Win)
+        } else {
+            None
+        }
+    }
+
+    fn player_won(&self, player: Player) -> bool {
         const WIDTH: u8 = 6;
         let board = match player {
             Player::Player1 => self.player1,
@@ -95,6 +127,10 @@ impl Board {
         }
 
         false
+    }
+
+    fn is_draw(self) -> bool {
+        self.player1 | self.player2 == MASK
     }
 
     fn free_squares(self) -> u64 {
@@ -154,27 +190,6 @@ impl Board {
 #[cfg(test)]
 mod tests {
     use super::*;
-
-    impl Board {
-        // Creates a new board from an array of integers. Useful for testing purposes.
-        pub fn new(array: [[u8; 6]; 6]) -> Board {
-            let mut player1 = 0u64;
-            let mut player2 = 0u64;
-
-            #[allow(clippy::needless_range_loop)]
-            for i in 0..6 {
-                for j in 0..6 {
-                    match array[i][j] {
-                        1 => player1 |= 1 << (6 * i + j),
-                        2 => player2 |= 1 << (6 * i + j),
-                        _ => {}
-                    };
-                }
-            }
-
-            Board { player1, player2 }
-        }
-    }
 
     #[test]
     fn new_test() {

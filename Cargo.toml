@@ -6,7 +6,9 @@ edition = "2018"
 
 [lib]
 name = "pentarust"
-crate-type = ["dylib"]
+crate-type = ["lib", "dylib"]
 
 [dependencies]
+float-ord = "0.2.0"
 jni = "0.11.0"
+rand = "0.6.5"

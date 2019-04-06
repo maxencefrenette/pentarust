@@ -5,7 +5,7 @@ pub enum Player {
 }
 
 impl Player {
-    pub fn opponent(&self) -> Player {
+    pub fn opponent(self) -> Player {
         match self {
             Player::Player1 => Player::Player2,
             Player::Player2 => Player::Player1,
