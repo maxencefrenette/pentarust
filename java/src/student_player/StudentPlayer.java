@@ -27,18 +27,24 @@ public class StudentPlayer extends PentagoPlayer {
      * make decisions.
      */
     public Move chooseMove(PentagoBoardState boardState) {
+    	System.out.println(boardState);
+    	
     	long player1 = 0;
     	long player2 = 0;
     	
     	for(int i = 0; i < 6; i++) {
     		for(int j = 0; j < 6; j++) {
-        		if (boardState.getPieceAt(j, i) == Piece.WHITE) {
-        			player1 &= 1 << (6*j + i);
-        		} else if (boardState.getPieceAt(j, i) == Piece.BLACK) {
-        			player2 &= 1 << (6*j + i);
+        		if (boardState.getPieceAt(i, j) == Piece.WHITE) {
+        			player1 |= 1L << (6*i + j);
+        		} else if (boardState.getPieceAt(i, j) == Piece.BLACK) {
+        			player2 |= 1L << (6*i + j);
         		}
         	}
     	}
+    	
+    	System.out.print(player1);
+    	System.out.print(" ");
+    	System.out.println(player2);
     	
         long bitMove = pentaRust.chooseMove(player1, player2);
         long mask = 0xFF;
@@ -49,6 +55,6 @@ public class StudentPlayer extends PentagoPlayer {
         Quadrant bSwap = Quadrant.values()[(int) (bitMove >> 24 & mask)];
         int playerId = (int) (bitMove >> 32 & mask);
 
-        return new PentagoMove(x, y, aSwap, bSwap, playerId);
+        return new PentagoMove(y, x, aSwap, bSwap, playerId);
     }
 }

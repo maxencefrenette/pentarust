@@ -2,6 +2,7 @@ use crate::game::Board;
 use crate::game::Player;
 use crate::game::Swap;
 use crate::mcts::TreeNode;
+use jni::objects::JClass;
 use jni::JNIEnv;
 use std::time::Duration;
 
@@ -19,6 +20,7 @@ const BOTTOM_RIGHT: u64 = 3;
 #[allow(non_snake_case)]
 pub extern "C" fn Java_student_1player_PentaRust_chooseMove(
     _env: JNIEnv,
+    _class: JClass,
     player1: u64,
     player2: u64,
 ) -> u64 {
@@ -26,7 +28,13 @@ pub extern "C" fn Java_student_1player_PentaRust_chooseMove(
     let mut tree = TreeNode::new(board);
 
     tree.search(Duration::from_millis(1_900));
+    eprintln!("{:?} {:?}", player1, player2);
+    eprintln!("{:?}", tree.state.outcome());
+    eprintln!("{:?}", tree.state);
+    eprintln!("{:?}", tree.win_stats);
+
     let action = tree.best_move();
+    eprintln!("{:?}", action);
 
     let x = u64::from(action.square % 6);
     let y = u64::from(action.square / 6);

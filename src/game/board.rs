@@ -2,10 +2,11 @@ use crate::game::Action;
 use crate::game::Outcome;
 use crate::game::Player;
 use crate::game::Swap;
+use std::fmt;
 
 const MASK: u64 = 0xF_FFFF_FFFF;
 
-#[derive(Debug, PartialEq, Eq, Default, Clone, Copy)]
+#[derive(PartialEq, Eq, Default, Clone, Copy)]
 pub struct Board {
     pub player1: u64,
     pub player2: u64,
@@ -184,6 +185,40 @@ impl Board {
         self.player2 |= tmp2 << difference;
 
         self
+    }
+}
+
+impl fmt::Debug for Board {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        writeln!(f, "Board::new([")?;
+
+        for i in 0..6 {
+            write!(f, "    [")?;
+
+            for j in 0..6 {
+                let n: u64 = 6 * i + j;
+
+                if self.player1 & (1u64 << n) != 0 {
+                    write!(f, "1")?;
+                } else if self.player2 & (1u64 << n) != 0 {
+                    write!(f, "2")?;
+                } else {
+                    write!(f, "0")?;
+                }
+
+                if j != 5 {
+                    write!(f, ", ")?;
+                }
+            }
+
+            write!(f, "]")?;
+            if i != 5 {
+                write!(f, ",")?;
+            }
+            writeln!(f)?;
+        }
+
+        write!(f, "])")
     }
 }
 

@@ -61,7 +61,7 @@ impl TreeNode {
                             + 0.0001f32 * rng.gen::<f32>(),
                     )
                 })
-                .expect("non-empty list");
+                .expect("Called TreeNode::expand() on a node with an empty list of children");
 
             next.expand(remaining_games)
         } else {
@@ -111,11 +111,11 @@ impl TreeNode {
         let best_move_index = self
             .children
             .as_ref()
-            .expect("non-empty tree")
+            .expect("Called TreeNode::best_move() on an empty tree")
             .iter()
             .enumerate()
             .max_by_key(|(_, child)| FloatOrd(child.win_stats.expected_win_ratio(player)))
-            .expect("non-empty list")
+            .expect("Called TreeNode::best_move() on a node with no children")
             .0;
 
         actions[best_move_index]
