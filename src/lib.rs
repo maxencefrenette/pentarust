@@ -9,7 +9,6 @@ use std::time::Duration;
 // Todo: only export for the test target
 pub mod game;
 pub mod mcts;
-pub mod win_stats;
 
 const TOP_LEFT: u64 = 0;
 const TOP_RIGHT: u64 = 1;

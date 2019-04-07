@@ -1,7 +1,7 @@
 use crate::game::Action;
 use crate::game::Board;
 use crate::game::Outcome;
-use crate::win_stats::WinStats;
+use crate::mcts::WinStats;
 use float_ord::FloatOrd;
 use rand::seq::IteratorRandom;
 use rand::thread_rng;
