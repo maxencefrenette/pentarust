@@ -27,7 +27,7 @@ public class StudentPlayer extends PentagoPlayer {
      * make decisions.
      */
     public Move chooseMove(PentagoBoardState boardState) {
-    	System.out.println(boardState);
+    	// System.out.println(boardState);
     	
     	long player1 = 0;
     	long player2 = 0;
@@ -42,9 +42,9 @@ public class StudentPlayer extends PentagoPlayer {
         	}
     	}
     	
-    	System.out.print(player1);
-    	System.out.print(" ");
-    	System.out.println(player2);
+    	// System.out.print(player1);
+    	// System.out.print(" ");
+    	// System.out.println(player2);
     	
         long bitMove = pentaRust.chooseMove(player1, player2);
         long mask = 0xFF;
