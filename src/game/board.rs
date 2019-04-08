@@ -102,7 +102,8 @@ impl Board {
         };
 
         // Check rows
-        let m = board & (board >> 2);
+        let no_wrapping_board = board & 0b001111_001111_001111_001111_001111_001111;
+        let m = no_wrapping_board & (board >> 2);
         if m & (m >> 1) & (m >> 2) != 0 {
             return true;
         }
@@ -453,12 +454,38 @@ mod tests {
     fn player_won_wrapping() {
         assert_eq!(
             Board::new([
+                [0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 1, 1, 1],
+                [1, 1, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0]
+            ])
+            .player_won(Player::Player1),
+            false
+        );
+
+        assert_eq!(
+            Board::new([
                 [0, 0, 0, 1, 0, 0],
                 [0, 0, 0, 0, 1, 0],
                 [0, 0, 0, 0, 0, 1],
                 [0, 0, 0, 0, 0, 0],
                 [1, 0, 0, 0, 0, 0],
                 [0, 1, 0, 0, 0, 0]
+            ])
+            .player_won(Player::Player1),
+            false
+        );
+
+        assert_eq!(
+            Board::new([
+                [0, 1, 0, 0, 0, 0],
+                [1, 0, 0, 0, 0, 1],
+                [0, 0, 0, 0, 1, 0],
+                [0, 0, 0, 1, 0, 0],
+                [0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0]
             ])
             .player_won(Player::Player1),
             false
