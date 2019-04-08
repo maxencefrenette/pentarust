@@ -56,13 +56,10 @@ fn choose_move(player1: u64, player2: u64) -> u64 {
     let player = board.turn();
 
     // Check for a winning move
-    let winning_move = board
-        .children()
-        .into_iter()
-        .position(|c| c.player_won(player));
-    let action = if let Some(action_index) = winning_move {
+    let winning_state_opt = board.children().into_iter().find(|c| c.player_won(player));
+    let action = if let Some(winning_state) = winning_state_opt {
         trace!("Found winning move !");
-        board.actions()[action_index]
+        board.action_to(winning_state)
     } else {
         let mut tree = TreeNode::new(board);
 
@@ -87,7 +84,7 @@ fn choose_move(player1: u64, player2: u64) -> u64 {
         Swap::TL_BR => (TOP_LEFT, BOTTOM_RIGHT),
         Swap::TR_BL => (TOP_RIGHT, BOTTOM_LEFT),
     };
-    let player_id = match board.turn() {
+    let player_id = match player {
         Player::Player1 => 0u64,
         Player::Player2 => 1u64,
     };

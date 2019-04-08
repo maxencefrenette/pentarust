@@ -32,26 +32,6 @@ impl Board {
         Board { player1, player2 }
     }
 
-    /// Returns the legal actions from this state
-    pub fn actions(self) -> Vec<Action> {
-        let mut free_squares = self.free_squares();
-        let mut actions = Vec::<Action>::with_capacity((free_squares.count_ones() * 6) as usize);
-
-        let mut square = 0;
-        while free_squares != 0 {
-            if (free_squares & 1) != 0 {
-                for swap in Swap::iterator() {
-                    actions.push(Action::new(square, *swap))
-                }
-            }
-
-            free_squares >>= 1;
-            square += 1;
-        }
-
-        actions
-    }
-
     /// Returns the children that can arise from this board state
     pub fn children(self) -> Vec<Board> {
         let mut free_squares = self.free_squares();
@@ -71,6 +51,29 @@ impl Board {
         }
 
         children
+    }
+
+    /// Returns the action that lead to the given state
+    pub fn action_to(self, next_state: Board) -> Action {
+        let mut free_squares = self.free_squares();
+
+        let mut square = 0;
+        while free_squares != 0 {
+            if (free_squares & 1) != 0 {
+                for swap in Swap::iterator() {
+                    let child = self.play_at(square).swap(*swap);
+
+                    if child == next_state {
+                        return Action::new(square, *swap);
+                    }
+                }
+            }
+
+            free_squares >>= 1;
+            square += 1;
+        }
+
+        panic!("Couldn't find action from {:?} to {:?}", self, next_state);
     }
 
     /// Returns true of it's player 1's turn, false otherwise

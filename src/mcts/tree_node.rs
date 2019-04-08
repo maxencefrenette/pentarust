@@ -94,17 +94,14 @@ impl TreeNode {
     /// Returns the best move from the perspective of the current player
     pub fn best_move(&self) -> Action {
         let player = self.state.turn();
-        let actions = self.state.actions();
-        let best_move_index = self
+        let best_child = self
             .children
             .as_ref()
             .expect("Called TreeNode::best_move() on an empty tree")
             .iter()
-            .enumerate()
-            .max_by_key(|(_, child)| FloatOrd(child.win_stats.expected_win_ratio(player)))
-            .expect("Called TreeNode::best_move() on a node with no children")
-            .0;
+            .max_by_key(|child| FloatOrd(child.win_stats.expected_win_ratio(player)))
+            .expect("Called TreeNode::best_move() on a node with no children");
 
-        actions[best_move_index]
+        self.state.action_to(best_child.state)
     }
 }
