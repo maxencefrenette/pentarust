@@ -29,12 +29,12 @@ impl TreeNode {
         let start = SystemTime::now();
 
         while start.elapsed().unwrap_or_else(|_| Duration::new(0, 0)) < time_limit {
-            self.expand();
+            self.expand(0);
         }
     }
 
     /// Expands this node once
-    fn expand(&mut self) -> Outcome {
+    fn expand(&mut self, depth: u8) -> Outcome {
         let mut rng = thread_rng();
 
         let winner = if let Some(children) = &mut self.children {
@@ -50,7 +50,7 @@ impl TreeNode {
                 })
                 .expect("Called TreeNode::expand() on a node with an empty list of children");
 
-            next.expand()
+            next.expand(depth + 1)
         } else {
             if let Some(outcome) = self.state.outcome() {
                 return outcome;

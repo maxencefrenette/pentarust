@@ -94,7 +94,7 @@ impl Board {
         }
     }
 
-    fn player_won(&self, player: Player) -> bool {
+    pub fn player_won(&self, player: Player) -> bool {
         const WIDTH: u8 = 6;
         let board = match player {
             Player::Player1 => self.player1,

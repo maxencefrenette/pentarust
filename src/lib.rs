@@ -53,15 +53,28 @@ pub extern "C" fn Java_student_1player_Baseline_chooseMove(
 
 fn choose_move(player1: u64, player2: u64) -> u64 {
     let board = Board { player1, player2 };
-    let mut tree = TreeNode::new(board);
+    let player = board.turn();
 
-    tree.search(Duration::from_millis(1_800));
-    trace!("{:?} {:?}", player1, player2);
-    trace!("{:?}", tree.state.outcome());
-    trace!("{:?}", tree.state);
-    trace!("{:?}", tree.win_stats);
+    // Check for a winning move
+    let winning_move = board
+        .children()
+        .into_iter()
+        .position(|c| c.player_won(player));
+    let action = if let Some(action_index) = winning_move {
+        trace!("Found winning move !");
+        board.actions()[action_index]
+    } else {
+        let mut tree = TreeNode::new(board);
 
-    let action = tree.best_move();
+        tree.search(Duration::from_millis(1_800));
+        trace!("{:?} {:?}", player1, player2);
+        trace!("{:?}", tree.state.outcome());
+        trace!("{:?}", tree.state);
+        trace!("{:?}", tree.win_stats);
+
+        tree.best_move()
+    };
+
     trace!("{:?}", action);
 
     let x = u64::from(action.square % 6);
