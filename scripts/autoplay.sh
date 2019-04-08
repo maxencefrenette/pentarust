@@ -3,6 +3,8 @@
 OUTCOMES_FILE=java/logs/outcomes.txt
 NUM_GAMES=20
 
+cargo build --release
+
 cd java
 java -cp bin autoplay.Autoplay $NUM_GAMES
 cd ..
