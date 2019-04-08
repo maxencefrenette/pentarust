@@ -26,44 +26,31 @@ impl TreeNode {
 
     /// Repeatedly expands the tree until the maximum duration is reached
     pub fn search(&mut self, time_limit: Duration) {
-        const WARMUP_GAMES: u8 = 100;
         let start = SystemTime::now();
-        let mut games_played: f32 = f32::from(WARMUP_GAMES);
-        let mut time_elapsed = Duration::default();
 
-        for _ in 0..WARMUP_GAMES {
-            self.expand(1_000_000.);
-        }
-
-        while time_elapsed < time_limit {
-            let time_elapsed_f32 = time_elapsed.as_micros() as f32;
-            let time_remaining = (time_limit - time_elapsed).as_micros() as f32;
-            self.expand(games_played * time_remaining / time_elapsed_f32);
-
-            games_played += 1.;
-            time_elapsed = start.elapsed().unwrap_or_else(|_| Duration::new(0, 0));
+        while start.elapsed().unwrap_or_else(|_| Duration::new(0, 0)) < time_limit {
+            self.expand();
         }
     }
 
     /// Expands this node once
-    fn expand(&mut self, remaining_games: f32) -> Outcome {
+    fn expand(&mut self) -> Outcome {
         let mut rng = thread_rng();
 
         let winner = if let Some(children) = &mut self.children {
             let player = self.state.turn();
+            let games_played = self.win_stats.games_played;
             let next = children
                 .iter_mut()
                 .max_by_key(|child| {
                     FloatOrd(
-                        child
-                            .win_stats
-                            .upper_confidence_bound(player, remaining_games)
+                        child.win_stats.upper_confidence_bound(player, games_played)
                             + 0.0001f32 * rng.gen::<f32>(),
                     )
                 })
                 .expect("Called TreeNode::expand() on a node with an empty list of children");
 
-            next.expand(remaining_games)
+            next.expand()
         } else {
             if let Some(outcome) = self.state.outcome() {
                 return outcome;

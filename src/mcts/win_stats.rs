@@ -20,7 +20,7 @@ impl WinStats {
         w / n
     }
 
-    pub fn upper_confidence_bound(self, player: Player, remaining_games: f32) -> f32 {
+    pub fn upper_confidence_bound(self, player: Player, total_games: f32) -> f32 {
         if self.games_played == 0. {
             return 1_000_000.;
         }
@@ -29,7 +29,7 @@ impl WinStats {
         let w = self.wins(player);
         let n = self.games_played;
 
-        (w / n) + c * f32::sqrt(remaining_games.ln() / n)
+        (w / n) + c * f32::sqrt(total_games.ln() / n)
     }
 
     fn wins(self, player: Player) -> f32 {
