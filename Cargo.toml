@@ -1,18 +1,4 @@
-[package]
-name = "pentarust"
-version = "0.1.0"
-authors = ["Maxence Frenette <maxence.frenette@gmail.com>"]
-edition = "2018"
-
-[lib]
-name = "pentarust"
-crate-type = ["lib", "dylib"]
-
-[dependencies]
-float-ord = "0.2.0"
-jni = "0.11.0"
-rand = "0.6.5"
-
-[features]
-trace = []
-baseline = []
+[workspace]
+members = [
+    "pentarust"
+]
