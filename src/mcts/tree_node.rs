@@ -52,17 +52,14 @@ impl TreeNode {
 
             next.expand(depth + 1)
         } else {
+            // Check if this is a terminal state
             if let Some(outcome) = self.state.outcome() {
                 return outcome;
             }
 
-            self.children = Some(
-                self.state
-                    .children()
-                    .into_iter()
-                    .map(TreeNode::new)
-                    .collect(),
-            );
+            // Only consider forced moves for nodes close to the root
+            let children = self.state.children(depth < 2);
+            self.children = Some(children.into_iter().map(TreeNode::new).collect());
 
             self.simulate()
         };
@@ -83,7 +80,7 @@ impl TreeNode {
             }
 
             state = *state
-                .children()
+                .children(false)
                 .iter()
                 .choose(&mut rng)
                 .expect("all non-terminal states have children");

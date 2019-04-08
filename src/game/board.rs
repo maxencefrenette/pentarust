@@ -33,7 +33,8 @@ impl Board {
     }
 
     /// Returns the children that can arise from this board state
-    pub fn children(self) -> Vec<Board> {
+    pub fn children(self, filter_forced_moves: bool) -> Vec<Board> {
+        let player = self.turn();
         let mut free_squares = self.free_squares();
         let mut children = Vec::<Board>::with_capacity((free_squares.count_ones() * 6) as usize);
 
@@ -41,8 +42,19 @@ impl Board {
         while free_squares != 0 {
             if (free_squares & 1) != 0 {
                 for swap in Swap::iterator() {
-                    let child = self.play_at(square).swap(*swap);
+                    let child = self.play_at(player, square).swap(*swap);
                     children.push(child);
+
+                    // Check if the opponent could win by playing this move
+                    if filter_forced_moves {
+                        let opponent = player.opponent();
+                        if self.play_at(player.opponent(), square).player_won(opponent) {
+                            let stone_placed = self.play_at(player, square);
+                            return Swap::iterator()
+                                .map(|swap| stone_placed.swap(*swap))
+                                .collect();
+                        }
+                    }
                 }
             }
 
@@ -55,13 +67,14 @@ impl Board {
 
     /// Returns the action that lead to the given state
     pub fn action_to(self, next_state: Board) -> Action {
+        let player = self.turn();
         let mut free_squares = self.free_squares();
 
         let mut square = 0;
         while free_squares != 0 {
             if (free_squares & 1) != 0 {
                 for swap in Swap::iterator() {
-                    let child = self.play_at(square).swap(*swap);
+                    let child = self.play_at(player, square).swap(*swap);
 
                     if child == next_state {
                         return Action::new(square, *swap);
@@ -142,10 +155,10 @@ impl Board {
         !(self.player1 | self.player2) & MASK
     }
 
-    fn play_at(mut self, square: u8) -> Board {
+    fn play_at(mut self, player: Player, square: u8) -> Board {
         let new_marble = 1 << square;
 
-        if self.turn() == Player::Player1 {
+        if player == Player::Player1 {
             self.player1 |= new_marble;
         } else {
             self.player2 |= new_marble;
@@ -303,7 +316,7 @@ mod tests {
                 [0, 0, 0, 0, 0, 0],
                 [0, 0, 0, 0, 0, 0]
             ])
-            .play_at(7),
+            .play_at(Player::Player1, 7),
             Board::new([
                 [0, 0, 0, 0, 0, 0],
                 [0, 1, 0, 0, 0, 0],
@@ -323,7 +336,7 @@ mod tests {
                 [0, 0, 0, 0, 0, 0],
                 [0, 0, 0, 0, 0, 0]
             ])
-            .play_at(7),
+            .play_at(Player::Player2, 7),
             Board::new([
                 [1, 0, 0, 0, 0, 0],
                 [0, 2, 0, 0, 0, 0],

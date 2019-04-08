@@ -56,7 +56,10 @@ fn choose_move(player1: u64, player2: u64) -> u64 {
     let player = board.turn();
 
     // Check for a winning move
-    let winning_state_opt = board.children().into_iter().find(|c| c.player_won(player));
+    let winning_state_opt = board
+        .children(false)
+        .into_iter()
+        .find(|c| c.player_won(player));
     let action = if let Some(winning_state) = winning_state_opt {
         trace!("Found winning move !");
         board.action_to(winning_state)
