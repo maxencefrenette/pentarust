@@ -15,18 +15,19 @@ const TOP_RIGHT: u64 = 1;
 const BOTTOM_LEFT: u64 = 2;
 const BOTTOM_RIGHT: u64 = 3;
 
-#[cfg(not(feature = "foo"))]
+#[cfg(not(feature = "trace"))]
 macro_rules! trace {
     ($($arg:tt)*) => {};
 }
 
-#[cfg(feature = "foo")]
+#[cfg(feature = "trace")]
 macro_rules! trace {
     ($($arg:tt)*) => ({
         eprintln!($($arg)*);
     })
 }
 
+#[cfg(not(feature = "baseline"))]
 #[no_mangle]
 #[allow(non_snake_case)]
 pub extern "C" fn Java_student_1player_PentaRust_chooseMove(
@@ -35,10 +36,26 @@ pub extern "C" fn Java_student_1player_PentaRust_chooseMove(
     player1: u64,
     player2: u64,
 ) -> u64 {
+    choose_move(player1, player2)
+}
+
+#[cfg(feature = "baseline")]
+#[no_mangle]
+#[allow(non_snake_case)]
+pub extern "C" fn Java_student_1player_Baseline_chooseMove(
+    _env: JNIEnv,
+    _class: JClass,
+    player1: u64,
+    player2: u64,
+) -> u64 {
+    choose_move(player1, player2)
+}
+
+fn choose_move(player1: u64, player2: u64) -> u64 {
     let board = Board { player1, player2 };
     let mut tree = TreeNode::new(board);
 
-    tree.search(Duration::from_millis(1_900));
+    tree.search(Duration::from_millis(1_800));
     trace!("{:?} {:?}", player1, player2);
     trace!("{:?}", tree.state.outcome());
     trace!("{:?}", tree.state);

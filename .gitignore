@@ -4,3 +4,5 @@ Cargo.lock
 
 /java/bin/
 /java/logs/
+
+/java/libBaseline.so

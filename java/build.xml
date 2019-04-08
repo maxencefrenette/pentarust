@@ -25,6 +25,13 @@
         </java>
     </target>
 
+	<!-- Run Client with StudentPlayer ======================================================== -->
+    <target name="baseline" depends="compile">
+        <java classpath="${run.classpath}" classname="boardgame.Client" fork="true">
+            <arg value="student_player.BaselinePlayer"/>
+        </java>
+    </target>
+	
     <!-- Run server ==================================================================== -->
     <target name="gui" depends="compile">
         <java classpath="${run.classpath}" classname="boardgame.Server" fork="true"/>
