@@ -48,7 +48,12 @@ impl Board {
                     // Check if the opponent could win by playing this move
                     if filter_forced_moves {
                         let opponent = player.opponent();
-                        if self.play_at(player.opponent(), square).player_won(opponent) {
+                        let is_opponent_winning_move = self
+                            .play_at(opponent, square)
+                            .swap(*swap)
+                            .player_won(opponent);
+
+                        if is_opponent_winning_move {
                             let stone_placed = self.play_at(player, square);
                             return Swap::iterator()
                                 .map(|swap| stone_placed.swap(*swap))
