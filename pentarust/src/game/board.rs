@@ -1,3 +1,4 @@
+use crate::game::board_symmetries::*;
 use crate::game::Action;
 use crate::game::Outcome;
 use crate::game::Player;
@@ -6,7 +7,7 @@ use std::fmt;
 
 const MASK: u64 = 0xF_FFFF_FFFF;
 
-#[derive(PartialEq, Eq, Default, Clone, Copy)]
+#[derive(PartialEq, Eq, Default, Clone, Copy, PartialOrd, Ord)]
 pub struct Board {
     pub player1: u64,
     pub player2: u64,
@@ -68,6 +69,25 @@ impl Board {
         }
 
         children
+    }
+
+    /// Returns the canonical equivalent fo this board.
+    ///
+    /// The canonical board is defined such that all equivalent board have the same canonical board.
+    pub fn canonical(self) -> Board {
+        let vertical = flip_vertical(self);
+        let symmetries = [
+            self,
+            vertical,
+            flip_horizontal(self),
+            flip_diagonal(self),
+            flip_antidiagonal(self),
+            flip_antidiagonal(vertical), // Rotate 90 clockwise
+            flip_horizontal(vertical),   // Rotate 180
+            flip_diagonal(vertical),     // Rotate 90 anticlockwise
+        ];
+
+        *symmetries.iter().min().unwrap()
     }
 
     /// Returns the action that lead to the given state
@@ -283,6 +303,29 @@ mod tests {
                 player1: 0x0_0000_0002,
                 player2: 0x0_0800_0000,
             }
+        );
+    }
+
+    #[test]
+    fn canonical_test() {
+        assert_eq!(
+            Board::new([
+                [0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 1],
+                [0, 0, 0, 0, 0, 0]
+            ])
+            .canonical(),
+            Board::new([
+                [0, 1, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0]
+            ])
         );
     }
 

@@ -79,7 +79,14 @@ fn generate(conn: &Connection) -> rusqlite::Result<()> {
 /// Expands the tree once
 fn expand(conn: &Connection, state: Board) -> rusqlite::Result<Node> {
     let mut node = Node::get(conn, state)?;
-    let children = state.children(false);
+    let mut children: Vec<Board> = state
+        .children(false)
+        .into_iter()
+        .map(|c| c.canonical())
+        .collect();
+
+    children.sort_unstable();
+    children.dedup();
 
     let child_nodes = if node.expanded {
         let mut rng = thread_rng();
