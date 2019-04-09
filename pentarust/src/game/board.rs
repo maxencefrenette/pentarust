@@ -233,6 +233,16 @@ impl Board {
 
         self
     }
+
+    /// Check if the board state is valid
+    ///
+    /// * No bits are set past the 36th
+    /// * No bits are set for both player1 and player2
+    pub fn is_valid(self) -> bool {
+        (self.player1 & !MASK) == 0
+            && (self.player2 & !MASK) == 0
+            && (self.player1 & self.player2) == 0
+    }
 }
 
 impl fmt::Debug for Board {
@@ -265,7 +275,18 @@ impl fmt::Debug for Board {
             writeln!(f)?;
         }
 
-        write!(f, "])")
+        write!(f, "])")?;
+
+        if !self.is_valid() {
+            writeln!(f)?;
+            write!(
+                f,
+                "Board {{ player1: {}, player2: {} }}",
+                self.player1, self.player2,
+            )?;
+        }
+
+        Ok(())
     }
 }
 

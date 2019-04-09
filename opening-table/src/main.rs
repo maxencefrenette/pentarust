@@ -88,6 +88,12 @@ fn expand(conn: &Connection, state: Board) -> rusqlite::Result<Node> {
     children.sort_unstable();
     children.dedup();
 
+    for c in children.iter() {
+        if !c.is_valid() {
+            panic!("Invalid children generated\n{:?}\n{:?}", state, c);
+        }
+    }
+
     let child_nodes = if node.expanded {
         let mut rng = thread_rng();
         let mut child_nodes = children
