@@ -5,3 +5,5 @@ target
 /java/logs/
 
 /java/data/libBaseline.so
+
+opening-table.sqlite

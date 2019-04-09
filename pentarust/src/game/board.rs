@@ -94,6 +94,11 @@ impl Board {
         panic!("Couldn't find action from {:?} to {:?}", self, next_state);
     }
 
+    /// Applies an action to the current state
+    pub fn apply_action(self, action: Action) -> Board {
+        self.play_at(self.turn(), action.square).swap(action.swap)
+    }
+
     /// Returns true of it's player 1's turn, false otherwise
     pub fn turn(&self) -> Player {
         if (self.player1 | self.player2).count_ones() % 2 == 0 {

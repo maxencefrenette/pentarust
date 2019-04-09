@@ -1,3 +1,4 @@
+use crate::game::Action;
 use crate::game::Board;
 use crate::game::Player;
 use crate::game::Swap;
@@ -51,29 +52,9 @@ pub extern "C" fn Java_student_1player_Baseline_chooseMove(
     choose_move(player1, player2)
 }
 
-fn choose_move(player1: u64, player2: u64) -> u64 {
+pub fn choose_move(player1: u64, player2: u64) -> u64 {
     let board = Board { player1, player2 };
-    let player = board.turn();
-
-    // Check for a winning move
-    let winning_state_opt = board
-        .children(false)
-        .into_iter()
-        .find(|c| c.player_won(player));
-    let action = if let Some(winning_state) = winning_state_opt {
-        trace!("Found winning move !");
-        board.action_to(winning_state)
-    } else {
-        let mut tree = TreeNode::new(board);
-
-        tree.search(Duration::from_millis(1_800));
-        trace!("{:?} {:?}", player1, player2);
-        trace!("{:?}", tree.state.outcome());
-        trace!("{:?}", tree.state);
-        trace!("{:?}", tree.win_stats);
-
-        tree.best_move()
-    };
+    let action = best_move(board, Duration::from_millis(1_800));
 
     trace!("{:?}", action);
 
@@ -87,10 +68,35 @@ fn choose_move(player1: u64, player2: u64) -> u64 {
         Swap::TL_BR => (TOP_LEFT, BOTTOM_RIGHT),
         Swap::TR_BL => (TOP_RIGHT, BOTTOM_LEFT),
     };
-    let player_id = match player {
+    let player_id = match board.turn() {
         Player::Player1 => 0u64,
         Player::Player2 => 1u64,
     };
 
     x | (y << 8) | (a_swap << 16) | (b_swap << 24) | (player_id << 32)
+}
+
+pub fn best_move(board: Board, search_time: Duration) -> Action {
+    let player = board.turn();
+
+    // Check for a winning move
+    let winning_state_opt = board
+        .children(false)
+        .into_iter()
+        .find(|c| c.player_won(player));
+
+    if let Some(winning_state) = winning_state_opt {
+        trace!("Found winning move !");
+        board.action_to(winning_state)
+    } else {
+        let mut tree = TreeNode::new(board);
+
+        tree.search(search_time);
+        trace!("{:?} {:?}", player1, player2);
+        trace!("{:?}", tree.state.outcome());
+        trace!("{:?}", tree.state);
+        trace!("{:?}", tree.win_stats);
+
+        tree.best_move()
+    }
 }

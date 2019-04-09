@@ -1,0 +1,12 @@
+[package]
+name = "opening-table"
+version = "0.1.0"
+authors = ["Maxence Frenette <maxence.frenette@gmail.com>"]
+edition = "2018"
+
+[dependencies]
+float-ord = "0.2.0"
+pentarust = { version = "0.1.0", path = "../pentarust" }
+rand = "0.6.5"
+rusqlite = { version = "0.17.0", features = ["bundled"] }
+structopt = "0.2.15"
