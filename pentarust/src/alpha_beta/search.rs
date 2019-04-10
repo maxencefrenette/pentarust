@@ -59,11 +59,6 @@ pub fn search(board: Board, duration: Duration, transpo_table: &mut Transpositio
 
         children.sort_by_key(|(_c, eval)| -eval);
 
-        for c in children.iter().take(5) {
-            println!("{:?}", c.0);
-            println!("{}", c.1);
-        }
-
         depth += 1;
     }
 }
@@ -105,9 +100,9 @@ where
     }
 
     let mut max_score: i32 = 1_000_000 - board.turn_number() as i32 - 1;
-    // if let Some(upper_bound) = transpo_table.get(board, depth) {
-    //     max_score = upper_bound;
-    // }
+    if let Some(upper_bound) = transpo_table.get(board, depth) {
+        max_score = upper_bound;
+    }
 
     if beta > max_score {
         beta = max_score;
@@ -133,7 +128,7 @@ where
         }
     }
 
-    // transpo_table.put(board, alpha, depth);
+    transpo_table.put(board, alpha, depth);
     Some(alpha)
 }
 
@@ -166,6 +161,7 @@ mod test {
         );
     }
 
+    #[test]
     fn negamax_test2() {
         let board = Board::new([
             [1, 0, 0, 1, 2, 1],

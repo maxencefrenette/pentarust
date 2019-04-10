@@ -108,7 +108,7 @@ pub fn best_move(board: Board, search_time: Duration) -> Action {
 
 lazy_static! {
     static ref TRANSPO_TABLE: Mutex<TranspositionTable> =
-        Mutex::new(TranspositionTable::new(10));
+        Mutex::new(TranspositionTable::new(1_000_000));
 }
 
 pub fn best_move(board: Board, search_time: Duration) -> Action {

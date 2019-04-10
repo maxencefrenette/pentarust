@@ -27,11 +27,11 @@ impl TranspositionTable {
         let i = self.index(key);
         let entry = &self.vec[i];
 
-        // if entry.key == key && entry.depth >= min_depth {
-        //     Some(entry.value)
-        // } else {
+        if entry.key == key && entry.depth >= min_depth {
+            Some(entry.value)
+        } else {
             None
-        // }
+        }
     }
 
     fn index(&self, key: Board) -> usize {
