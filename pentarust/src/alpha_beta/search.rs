@@ -48,7 +48,7 @@ pub fn search(board: Board, duration: Duration, transpo_table: &mut Transpositio
                 alpha = score
             }
 
-            c.1 = alpha;
+            c.1 = score;
         }
 
         let mut rng = thread_rng();
