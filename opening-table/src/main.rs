@@ -3,6 +3,7 @@ use node::Node;
 use pentarust::best_move;
 use pentarust::game::Board;
 use pentarust::game::Outcome;
+use pentarust::game::Player;
 use rand::thread_rng;
 use rand::Rng;
 use rusqlite::OptionalExtension;
@@ -25,6 +26,8 @@ enum Options {
     Stats,
     #[structopt(name = "generate")]
     Generate,
+    #[structopt(name = "main-line")]
+    MainLine,
 }
 
 fn main() -> rusqlite::Result<()> {
@@ -35,6 +38,7 @@ fn main() -> rusqlite::Result<()> {
         Options::Init => init(&conn)?,
         Options::Stats => stats(&conn)?,
         Options::Generate => generate(&conn)?,
+        Options::MainLine => main_line(&conn)?,
     };
 
     Ok(())
@@ -174,4 +178,51 @@ fn play_game(mut board: Board) -> Outcome {
 
         board = board.apply_action(best_move(board, Duration::from_millis(100)));
     }
+}
+
+fn main_line(conn: &Connection) -> rusqlite::Result<()> {
+    let mut node = Node::get(conn, Board::default())?;
+
+    loop {
+        println!(
+            "{}",
+            (node.player1_wins as f64) / (node.games_played as f64)
+        );
+        println!("{:?}", node);
+        println!();
+
+        if !node.expanded {
+            break;
+        }
+
+        let mut children: Vec<Board> = node
+            .board
+            .children(false)
+            .into_iter()
+            .map(|c| c.canonical())
+            .collect();
+
+        children.sort_unstable();
+        children.dedup();
+
+        let child_nodes = children
+            .into_iter()
+            .map(|child| Node::get(conn, child))
+            .collect::<rusqlite::Result<Vec<Node>>>()?;
+
+        node = child_nodes
+            .into_iter()
+            .max_by_key(|child_node| {
+                let w = match node.board.turn() {
+                    Player::Player1 => child_node.player1_wins,
+                    Player::Player2 => child_node.player2_wins,
+                } as f64;
+                let n = child_node.games_played as f64;
+
+                FloatOrd(w / n)
+            })
+            .expect("Tried to expand a non-expanded state");
+    }
+
+    Ok(())
 }
