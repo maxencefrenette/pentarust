@@ -18,7 +18,6 @@ public class BaselinePlayer extends PentagoPlayer {
      */
     public BaselinePlayer() {
         super("baseline");
-        baseline = new Baseline();
     }
 
     /**
@@ -27,6 +26,10 @@ public class BaselinePlayer extends PentagoPlayer {
      * make decisions.
      */
     public Move chooseMove(PentagoBoardState boardState) {
+    	if (baseline == null) {
+            baseline = new Baseline();
+    	}
+    	
     	// System.out.println(boardState);
     	
     	long player1 = 0;

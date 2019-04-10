@@ -6,7 +6,7 @@ edition = "2018"
 
 [lib]
 name = "pentarust"
-crate-type = ["lib", "dylib"]
+crate-type = ["lib", "cdylib"]
 
 [dependencies]
 float-ord = "0.2.0"
@@ -18,4 +18,3 @@ lazy_static = "1.3.0"
 
 [features]
 trace = []
-baseline = []

@@ -6,6 +6,7 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.lang.Exception;
+import java.lang.reflect.InvocationTargetException;
 
 /**
  * Boardgame player client code. Do not modify this class, implement Player
@@ -47,6 +48,9 @@ public class Client implements Runnable {
                     Class cl = Class.forName(args.length > 0 ? args[0] : DEFAULT_PLAYER);
                     java.lang.reflect.Constructor co = cl.getConstructor(new Class[0]);
                     p = (Player) co.newInstance(new Object[0]);
+                } catch (InvocationTargetException e) {
+                    System.err.println(e + ": " + e.getCause());
+                    throw e;
                 } catch (Exception e) {
                     System.err.println("Failed to create Player object: " + e);
                     printUsage();

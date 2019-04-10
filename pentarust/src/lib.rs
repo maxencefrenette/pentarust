@@ -28,10 +28,9 @@ macro_rules! trace {
     })
 }
 
-#[cfg(not(feature = "baseline"))]
 #[no_mangle]
 #[allow(non_snake_case)]
-pub extern "C" fn Java_student_1player_PentaRust_chooseMove(
+pub extern "system" fn Java_student_1player_PentaRust_chooseMove(
     _env: JNIEnv,
     _class: JClass,
     player1: u64,
@@ -40,10 +39,9 @@ pub extern "C" fn Java_student_1player_PentaRust_chooseMove(
     choose_move(player1, player2)
 }
 
-#[cfg(feature = "baseline")]
 #[no_mangle]
 #[allow(non_snake_case)]
-pub extern "C" fn Java_student_1player_Baseline_chooseMove(
+pub extern "system" fn Java_student_1player_Baseline_chooseMove(
     _env: JNIEnv,
     _class: JClass,
     player1: u64,

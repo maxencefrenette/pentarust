@@ -18,7 +18,6 @@ public class StudentPlayer extends PentagoPlayer {
      */
     public StudentPlayer() {
         super("260685124");
-        pentaRust = new PentaRust();
     }
 
     /**
@@ -27,6 +26,10 @@ public class StudentPlayer extends PentagoPlayer {
      * make decisions.
      */
     public Move chooseMove(PentagoBoardState boardState) {
+    	if (pentaRust == null) {
+    		pentaRust = new PentaRust();
+    	}
+    	
     	// System.out.println(boardState);
     	
     	long player1 = 0;
