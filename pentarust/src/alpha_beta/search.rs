@@ -103,7 +103,14 @@ where
         }
     }
 
-    for c in board.children(false).into_iter() {
+    let mut children = board.children(false);
+
+    // Order moves based on previous iterations
+    if depth > 3 {
+        children.sort_by_key(|c| transpo_table.get(*c, depth - 1).unwrap_or(0));
+    }
+
+    for c in children.into_iter() {
         let search_result = negamax(c, depth - 1, -beta, -alpha, transpo_table, early_stop);
         let score = if let Some(value) = search_result {
             -value
