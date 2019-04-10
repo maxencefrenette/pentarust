@@ -40,7 +40,7 @@ pub fn search(board: Board, duration: Duration, transpo_table: &mut Transpositio
             };
 
             if score >= beta {
-                println!("Found a guaranteed win at depth {} !", depth + 1);
+                println!("Found a guaranteed win at depth < {} !", depth + 1);
                 return board.action_to(c.0);
             }
 
