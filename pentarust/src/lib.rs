@@ -1,13 +1,18 @@
+use crate::alpha_beta::search;
+use crate::alpha_beta::TranspositionTable;
 use crate::game::Action;
 use crate::game::Board;
 use crate::game::Player;
 use crate::game::Swap;
-use crate::mcts::TreeNode;
 use jni::objects::JClass;
 use jni::JNIEnv;
+use lazy_static::lazy_static;
+use std::cell::Cell;
+use std::sync::Mutex;
 use std::time::Duration;
 
 // Todo: only export for the test target
+pub mod alpha_beta;
 pub mod game;
 pub mod mcts;
 
@@ -74,6 +79,7 @@ pub fn choose_move(player1: u64, player2: u64) -> u64 {
     x | (y << 8) | (a_swap << 16) | (b_swap << 24) | (player_id << 32)
 }
 
+/*
 pub fn best_move(board: Board, search_time: Duration) -> Action {
     let player = board.turn();
 
@@ -97,4 +103,16 @@ pub fn best_move(board: Board, search_time: Duration) -> Action {
 
         tree.best_move()
     }
+}
+*/
+
+lazy_static! {
+    static ref TRANSPO_TABLE: Mutex<TranspositionTable> =
+        Mutex::new(TranspositionTable::new(10));
+}
+
+pub fn best_move(board: Board, search_time: Duration) -> Action {
+    let transpo_table = &mut TRANSPO_TABLE.lock().expect("failed to lock transpo table");
+
+    search(board, search_time, transpo_table)
 }

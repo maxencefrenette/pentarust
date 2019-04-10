@@ -7,7 +7,7 @@ use std::fmt;
 
 const MASK: u64 = 0xF_FFFF_FFFF;
 
-#[derive(PartialEq, Eq, Default, Clone, Copy, PartialOrd, Ord)]
+#[derive(PartialEq, Eq, Default, Clone, Copy, PartialOrd, Ord, Hash)]
 pub struct Board {
     pub player1: u64,
     pub player2: u64,
@@ -126,6 +126,10 @@ impl Board {
         } else {
             Player::Player2
         }
+    }
+
+    pub fn turn_number(self) -> u32 {
+        (self.player1 | self.player2).count_ones()
     }
 
     pub fn outcome(self) -> Option<Outcome> {
