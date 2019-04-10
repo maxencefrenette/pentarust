@@ -7,7 +7,6 @@ use crate::game::Swap;
 use jni::objects::JClass;
 use jni::JNIEnv;
 use lazy_static::lazy_static;
-use std::cell::Cell;
 use std::sync::Mutex;
 use std::time::Duration;
 
