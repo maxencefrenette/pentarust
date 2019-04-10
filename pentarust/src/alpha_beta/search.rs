@@ -13,47 +13,59 @@ pub fn search(board: Board, duration: Duration, transpo_table: &mut Transpositio
         return Action::new(7, Swap::BL_BR);
     }
 
-    let best_child = board
-        .children(false)
-        .into_iter()
-        .max_by_key(|c| -negamax(*c, 3, -1_000_000, 1_000_000, transpo_table, &|| false).unwrap())
-        .unwrap();
-    let best_action = board.action_to(best_child);
-    best_action
+    // let best_child = board
+    //     .children(false)
+    //     .into_iter()
+    //     .max_by_key(|c| -negamax(*c, 3, -1_000_000, 1_000_000, transpo_table, &|| false).unwrap())
+    //     .unwrap();
+    // let best_action = board.action_to(best_child);
+    // best_action
 
-    // let start = SystemTime::now();
-    // let mut depth = 4;
-    // let mut children: Vec<(Board, i32)> =
-    //     board.children(false).into_iter().map(|c| (c, 0)).collect();
+    let start = SystemTime::now();
+    let mut depth = 3;
+    let mut children: Vec<(Board, i32)> =
+        board.children(false).into_iter().map(|c| (c, 0)).collect();
 
-    // loop {
-    //     let best_action = board.action_to(children[0].0);
-    //     let best_eval = children[0].1;
+    loop {
+        let best_action = board.action_to(children[0].0);
+        let best_eval = children[0].1;
 
-    //     for c in children.iter_mut() {
-    //         let early_stop = || start.elapsed().unwrap_or(Duration::from_secs(0)) > duration;
+        let mut alpha = -1_000_000;
+        let beta = 999_950; // Any guaranteed win is good
 
-    //         let search_result = negamax(
-    //             board,
-    //             depth,
-    //             -1_000_000,
-    //             1_000_000,
-    //             transpo_table,
-    //             &early_stop,
-    //         );
-    //         c.1 = if let Some(value) = search_result {
-    //             -value
-    //         } else {
-    //             println!("Searched depth {}", depth);
-    //             println!("Eval {}", best_eval);
-    //             return best_action;
-    //         }
-    //     }
+        for c in children.iter_mut() {
+            let early_stop = || start.elapsed().unwrap_or(Duration::from_secs(0)) > duration;
 
-    //     children.sort_by_key(|(_c, eval)| *eval);
+            let search_result = negamax(c.0, depth, alpha, beta, transpo_table, &early_stop);
+            let score = if let Some(value) = search_result {
+                -value
+            } else {
+                println!("Searched depth {}", depth);
+                println!("Eval {}", best_eval);
+                return best_action;
+            };
 
-    //     depth += 1;
-    // }
+            if score >= beta {
+                println!("Found a guaranteed win at depth {} !", depth + 1);
+                return board.action_to(c.0);
+            }
+
+            if score > alpha {
+                alpha = score
+            }
+
+            c.1 = alpha;
+        }
+
+        children.sort_by_key(|(_c, eval)| -eval);
+
+        for c in children.iter().take(5) {
+            println!("{:?}", c.0);
+            println!("{}", c.1);
+        }
+
+        depth += 1;
+    }
 }
 
 /// Returns some(value) if the calculation has time to finish, None otherwise
@@ -79,7 +91,7 @@ where
             -1
         };
 
-        let win_score = (1_000_000 - board.turn_number() as i32);
+        let win_score = 1_000_000 - board.turn_number() as i32;
         let value = match outcome {
             Outcome::Player1Win => m * win_score,
             Outcome::Player2Win => -m * win_score,
@@ -130,7 +142,7 @@ mod test {
     use super::*;
 
     #[test]
-    fn trap_test() {
+    fn negamax_test1() {
         let board = Board::new([
             [1, 2, 0, 0, 0, 0],
             [1, 2, 0, 1, 2, 0],
@@ -151,6 +163,30 @@ mod test {
             )
             .unwrap(),
             999_991
+        );
+    }
+
+    fn negamax_test2() {
+        let board = Board::new([
+            [1, 0, 0, 1, 2, 1],
+            [0, 1, 0, 0, 2, 0],
+            [0, 0, 0, 0, 2, 0],
+            [0, 0, 0, 1, 1, 0],
+            [0, 2, 0, 0, 2, 0],
+            [0, 0, 0, 0, 0, 0],
+        ]);
+
+        assert_eq!(
+            negamax(
+                board,
+                3,
+                -1_000_000,
+                1_000_000,
+                &mut TranspositionTable::new(1),
+                &|| false
+            )
+            .unwrap(),
+            999_988
         );
     }
 }
