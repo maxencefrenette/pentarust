@@ -70,8 +70,7 @@ impl Node {
         Ok(())
     }
 
-    pub fn ucb(&self, total_games: i64) -> f64 {
-        let c = f64::sqrt(2.);
+    pub fn ucb(&self, total_games: i64, c: f64) -> f64 {
         // Since we are calculating the UCB from the perspective of the other player, we need to invert this
         let w = match self.board.turn() {
             Player::Player1 => self.player2_wins,

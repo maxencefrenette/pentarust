@@ -25,7 +25,10 @@ enum Options {
     #[structopt(name = "stats")]
     Stats,
     #[structopt(name = "generate")]
-    Generate,
+    Generate {
+        #[structopt(short = "c", default_value = "1.4142")]
+        c: f64,
+    },
     #[structopt(name = "main-line")]
     MainLine,
 }
@@ -37,7 +40,7 @@ fn main() -> rusqlite::Result<()> {
     match opt {
         Options::Init => init(&conn)?,
         Options::Stats => stats(&conn)?,
-        Options::Generate => generate(&conn)?,
+        Options::Generate { c } => generate(&conn, c)?,
         Options::MainLine => main_line(&conn)?,
     };
 
@@ -74,14 +77,14 @@ fn stats(conn: &Connection) -> rusqlite::Result<()> {
 }
 
 /// Repeatedly expands the tree
-fn generate(conn: &Connection) -> rusqlite::Result<()> {
+fn generate(conn: &Connection, c: f64) -> rusqlite::Result<()> {
     loop {
-        expand(conn, Board::default())?;
+        expand(conn, Board::default(), c)?;
     }
 }
 
 /// Expands the tree once
-fn expand(conn: &Connection, state: Board) -> rusqlite::Result<Node> {
+fn expand(conn: &Connection, state: Board, c: f64) -> rusqlite::Result<Node> {
     let mut node = Node::get(conn, state)?;
     let mut children: Vec<Board> = state
         .children(false)
@@ -108,11 +111,13 @@ fn expand(conn: &Connection, state: Board) -> rusqlite::Result<Node> {
         let best_child_index = child_nodes
             .iter()
             .enumerate()
-            .max_by_key(|(_, n)| FloatOrd(n.ucb(node.games_played) + 0.0001f64 * rng.gen::<f64>()))
+            .max_by_key(|(_, n)| {
+                FloatOrd(n.ucb(node.games_played, c) + 0.0001f64 * rng.gen::<f64>())
+            })
             .expect("Tried to expand a terminal state")
             .0;
 
-        child_nodes[best_child_index] = expand(conn, child_nodes[best_child_index].board)?;
+        child_nodes[best_child_index] = expand(conn, child_nodes[best_child_index].board, c)?;
 
         child_nodes
     } else {
