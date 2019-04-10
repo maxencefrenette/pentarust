@@ -5,6 +5,8 @@ use crate::game::Board;
 use crate::game::Outcome;
 use crate::game::Player;
 use crate::game::Swap;
+use rand::thread_rng;
+use rand::Rng;
 use std::time::Duration;
 use std::time::SystemTime;
 
@@ -49,7 +51,8 @@ pub fn search(board: Board, duration: Duration, transpo_table: &mut Transpositio
             c.1 = alpha;
         }
 
-        children.sort_by_key(|(_c, eval)| -eval);
+        let mut rng = thread_rng();
+        children.sort_by_key(|(_c, eval)| -eval + rng.gen_range(-10, 10));
 
         depth += 1;
     }
