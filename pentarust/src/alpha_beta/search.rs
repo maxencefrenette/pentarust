@@ -13,14 +13,6 @@ pub fn search(board: Board, duration: Duration, transpo_table: &mut Transpositio
         return Action::new(7, Swap::BL_BR);
     }
 
-    // let best_child = board
-    //     .children(false)
-    //     .into_iter()
-    //     .max_by_key(|c| -negamax(*c, 3, -1_000_000, 1_000_000, transpo_table, &|| false).unwrap())
-    //     .unwrap();
-    // let best_action = board.action_to(best_child);
-    // best_action
-
     let start = SystemTime::now();
     let mut depth = 3;
     let mut children: Vec<(Board, i32)> =
