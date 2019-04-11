@@ -34,13 +34,16 @@ pub fn search(board: Board, duration: Duration, transpo_table: &mut Transpositio
             let score = if let Some(value) = search_result {
                 -value
             } else {
-                println!("Searched depth {}", depth);
-                println!("Eval {}", best_eval);
+                println!("Pentarust: searched depth {}", depth);
+                println!("Pentarust: eval {}", best_eval);
                 return best_action;
             };
 
             if score >= beta {
-                println!("Found a guaranteed win at depth < {} !", depth + 1);
+                println!(
+                    "Pentarust: Found a guaranteed win at depth < {} !",
+                    depth + 1
+                );
                 return board.action_to(c.0);
             }
 
